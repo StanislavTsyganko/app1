@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Main page</title>
+</head>
+<body>
+    <p> Приветствую, {{ user }}. </p>
+    <a href="{% url 'main_page' %}">Главная страница</a>
+    <a href="{% url 'deal:list' %}">Ваши сделки</a>
+    <a href="{% url 'deal:add' %}">Добавить сделку</a>
+
+</body>
+</html>
