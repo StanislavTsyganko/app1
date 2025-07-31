@@ -38,25 +38,31 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'integration_utils.bitrix24',
+    'integration_utils.its_utils.app_gitpull',
+    'deals'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 ROOT_URLCONF = 'urls'
 
+import os
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
         'APP_DIRS': True,
+        'DIRS': [
+            os.path.join(BASE_DIR, 'app1/templates'),
+        ],
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
@@ -119,5 +125,43 @@ STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+from integration_utils.its_utils.mute_logger import MuteLogger
+ilogger = MuteLogger()
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://b24-5qaq29.bitrix24.ru',
+    'http://127.0.0.1:8000'
+]
+
+# Настройки кук для кросс-доменной авторизации
+SESSION_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SECURE = True
+CORS_ALLOW_CREDENTIALS = True
+
+# local settings
+try:
+    from local_settings import *
+except ImportError:
+    from warnings import warn
+
+    warn('create local_settings.py')
+
+
+if not APP_SETTINGS:
+    from integration_utils.bitrix24.local_settings_class import LocalSettingsClass
+    APP_SETTINGS = LocalSettingsClass(
+        # portal_domain='',
+        app_domain='is_demo.it-solution.ru',
+        app_name='post_currency',
+        salt='df897hynj4b34u804b5n45bkl4b',
+        secret_key='sfjbh40989034nk4j4389tfj',
+        # application_bitrix_client_id='',
+        # application_bitrix_client_secret='',
+        application_index_path='/',
+    )
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
