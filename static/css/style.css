@@ -1,0 +1,50 @@
+body {
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    background-color: antiquewhite;
+    color: #334155;
+}
+
+
+nav a{
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    font-size: 16px;
+    background-color: rgb(156, 248, 132);
+    border-radius: 3px;
+    border: 1px solid black;
+}
+
+.table{
+    border: 2px solid black;
+    border-radius: 12px;
+}
+
+td {
+    border: 1px solid black;
+    border-radius: 12px;
+    text-align: center;
+    margin: 2px;
+}
+
+.field_form{
+    margin: 3px;
+    display: flex;
+    flex-direction: column;
+}
+
+.field_form label{
+    font-weight: 500;
+    margin-right: 5px;
+}
+.field_form  .field{
+    width: 126px;
+}
+
+.button_add{
+    width: 126px;
+    align: center;
+    background-color: rgb(55, 216, 76);
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    font-size: 20px;
+    border-radius: 6px;
+    border: 1px solid black;
+}

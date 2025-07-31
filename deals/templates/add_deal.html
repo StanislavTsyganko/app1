@@ -10,12 +10,12 @@
         {% csrf_token %}
         <div class="field_form">
             <label>Название сделки*</label>
-            <input type="text" name="title" required>
+            <input type="text" name="title" required  class="field">
         </div>
 
         <div class="field_form">
             <label>Тип сделки</label>
-            <select name="type_id">
+            <select name="type_id" class="field">
                 <option value="SALE">Продажа</option>
                 <option value="SALE_PRODUCT">Продажа товара</option>
                 <option value="SALE_SERVICE">Продажа услуги</option>
@@ -24,21 +24,21 @@
 
         <div class="field_form">
             <label>Сумма</label>
-            <input type="number" name="amount">
+            <input type="number" name="amount" class="field">
         </div>
 
         <div class="field_form">
             <label>Ссылка на объект сделки</label>
-            <input type="url" name="url_object">
+            <input type="url" name="url_object" class="field">
         </div>
 
         <div class="field_form">
             <label>Комментарии</label>
-            <textarea name="comments"></textarea>
+            <textarea name="comments" class="field"></textarea>
         </div>
 
         <div class="field_form">
-            <button type="submit" class="btn btn-primary">Создать</button>
+            <button type="submit" class="button_add">Создать</button>
         </div>
 
     </form>
