@@ -9,9 +9,14 @@
 </head>
 <body>
     <p> Приветствую, {{ user }}. </p>
-    <a href="{% url 'main_page' %}">Главная страница</a>
-    <a href="{% url 'deals:list' %}">Ваши сделки</a>
-    <a href="{% url 'deals:add' %}">Добавить сделку</a>
+    <nav>
+        <a href="{% url 'main_page' %}">Главная страница</a>
+        <a href="{% url 'deals:list' %}">Ваши сделки</a>
+        <a href="{% url 'deals:add' %}">Добавить сделку</a>
+    </nav>
 
+    {% block content %}
+
+    {% endblock %}
 </body>
 </html>

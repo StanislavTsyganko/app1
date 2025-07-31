@@ -1,0 +1,31 @@
+{% extends 'main_page.html' %}
+
+ {% block content %}
+
+    <h2>Мои последние сделки</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Стадия</th>
+                <th>Сумма</th>
+                <th>Дата создания</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for deal in deals %}
+            <tr>
+                <td>{{ deal.TITLE }}</td>
+                <td>{{ deal.STAGE_ID }}</td>
+                <td>{{ deal.OPPORTUNITY }}</td>
+                <td>{{ deal.DATE_CREATE }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">Сделок не найдено</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+ {% endblock %}
