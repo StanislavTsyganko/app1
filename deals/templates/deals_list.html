@@ -10,6 +10,7 @@
                 <th>Стадия</th>
                 <th>Сумма</th>
                 <th>Дата создания</th>
+                <th>Ссылка на объект сделки</th>
             </tr>
         </thead>
         <tbody>
@@ -18,7 +19,8 @@
                 <td>{{ deal.TITLE }}</td>
                 <td>{{ deal.STAGE_ID }}</td>
                 <td>{{ deal.OPPORTUNITY }}</td>
-                <td>{{ deal.DATE_CREATE }}</td>
+                <td>{{ deal.DATE_CREATE|slice:":10" }}</td>
+                <td><a href={{deal.UF_CRM_1753952380740}}>{{ deal.UF_CRM_1753952380740 }}</a></td>
             </tr>
             {% empty %}
             <tr>

@@ -1,0 +1,68 @@
+{% extends 'main_page.html' %}
+{% block user %}
+    <h2>Создание сделки ({{ user }})</h2>
+{% endblock %}
+
+ {% block content %}
+
+    <h2>Новая сделка</h2>
+    <form id="dealForm">
+        {% csrf_token %}
+        <div class="field_form">
+            <label>Название сделки*</label>
+            <input type="text" name="title" required>
+        </div>
+
+        <div class="field_form">
+            <label>Тип сделки</label>
+            <select name="type_id">
+                <option value="SALE">Продажа</option>
+                <option value="SALE_PRODUCT">Продажа товара</option>
+                <option value="SALE_SERVICE">Продажа услуги</option>
+            </select>
+        </div>
+
+        <div class="field_form">
+            <label>Сумма</label>
+            <input type="number" name="amount">
+        </div>
+
+        <div class="field_form">
+            <label>Ссылка на объект сделки</label>
+            <input type="url" name="url_object">
+        </div>
+
+        <div class="field_form">
+            <label>Комментарии</label>
+            <textarea name="comments"></textarea>
+        </div>
+
+        <div class="field_form">
+            <button type="submit" class="btn btn-primary">Создать</button>
+        </div>
+
+    </form>
+
+    <script>
+        document.getElementById('dealForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const response = await fetch('{% url "deals:add_deal" %}', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+            if (result.status === 'success') {
+                alert(`Сделка #${result.deal_id} успешно создана!`);
+                window.location.href = '{% url "deals:deals_list" %}';
+            } else {
+                alert('Ошибка: ' + (result.error || 'Неизвестная ошибка'));
+            }
+        });
+    </script>
+
+
+ {% endblock %}
+
