@@ -6,22 +6,23 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-
+<!--    <link rel="stylesheet" href="{% static 'css/style.css' %}">-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     {% block title %}
         <title>Main page</title>
     {% endblock %}
 </head>
 <body>
-    {% block user %}
-        <p> Приветствую, {{ user }}. </p>
-    {% endblock %}
 
-    <nav>
-        <a href="{% url 'main_page' %}">Главная страница</a>
-        <a href="{% url 'deals:deals_list' %}">Ваши сделки</a>
-        <a href="{% url 'deals:add_deal' %}">Добавить сделку</a>
+    <nav class="navbar navbar-expand-lg navbar-light bg-primary justify-content-center">
+        <a href="{% url 'main_page' %}" class="text-white m-1 mr-2">Главная страница</a>
+        <a href="{% url 'deals:deals_list' %}" class="text-white m-1 mr-2">Ваши сделки</a>
+        <a href="{% url 'deals:add_deal' %}" class="text-white m-1">Добавить сделку</a>
     </nav>
+
+    {% block user %}
+        <p class="fs-3 fw-bold"> Приветствую, {{ user }}. </p>
+    {% endblock %}
 
     {% block content %}
 

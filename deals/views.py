@@ -8,8 +8,9 @@ from views import get_name
 def list(request):
     try:
         bx = request.bitrix_user_token
+
         deals = bx.call_list_method('crm.deal.list', {
-            'filter': {'ASSIGNED_BY_ID': bx.user_id, 'STAGE_ID': 'PREPARATION'},
+            'filter': {'ASSIGNED_BY_ID': bx.user_id, '!STAGE_ID': ['WON', 'LOST']},
             'select': ['ID', 'TITLE', 'STAGE_ID', 'OPPORTUNITY', 'DATE_CREATE', 'UF_CRM_1753952380740'],
             'order': {'DATE_CREATE': 'DESC'},
             'start': 0

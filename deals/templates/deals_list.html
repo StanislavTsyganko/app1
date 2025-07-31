@@ -1,9 +1,16 @@
 {% extends 'main_page.html' %}
 
+{% block title %}
+    <title>Page with deals</title>
+{% endblock %}
+
+{% block user %}
+{% endblock %}
+
  {% block content %}
 
-    <h2>Мои последние сделки</h2>
-    <table class="table">
+    <h2>Последние сделки ({{ user }})</h2>
+    <table class="table table-hover table-striped">
         <thead>
             <tr>
                 <th>Название</th>
