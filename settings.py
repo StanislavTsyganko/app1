@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'integration_utils.bitrix24',
     'integration_utils.its_utils.app_gitpull',
-    'deals'
+    'deals',
+    'product'
 ]
 
 MIDDLEWARE = [

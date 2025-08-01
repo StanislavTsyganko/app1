@@ -1,0 +1,30 @@
+{% extends 'main_page.html' %}
+
+{% block title %}
+    <title>Page with QR generation</title>
+{% endblock %}
+
+{% block user %}
+{% endblock %}
+
+ {% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+    <form method="post" class="needs-validation">
+      {% csrf_token %}
+      <label for="product_id" class="form-label fw-bold mt-4">ID товара:</label>
+      <input type="number" class="form-control form-control-lg" id="product_id" name="product_id" required>
+      <button type="submit" class="btn btn-primary btn-lg py-3 mt-4">Сгенерировать QR</button>
+    </form>
+
+    {% if qr_url %}
+      <h2 class="fs-3 fw-bold">Ссылка:</h2>
+      <a href="{{ qr_url }}" class="fs-4">{{ qr_url }}</a>
+      <h2 class="fs-3 fw-bold">QR-код:</h2>
+      <img src="data:image/png;base64,{{ qr_image }}" alt="QR-код">
+    {% endif %}
+
+    </div>
+</div>
+
+{% endblock %}

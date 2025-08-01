@@ -1,0 +1,44 @@
+{% extends 'main_page.html' %}
+
+{% block title %}
+    <title>{{ product.NAME }}</title>
+{% endblock %}
+
+{% block user %}
+{% endblock %}
+
+{% block content %}
+    <div class="product-container">
+        <h1 class="product-title">{{ product.NAME }}</h1>
+
+        <div class="product-image-container">
+            {% if image_url %}
+        <img src="{{ image_url }}"
+             class="product-image img-fluid rounded"
+             alt="{{ product.NAME }}"
+             onerror="this.onerror=null; this.src='/static/no-image.jpg'">
+        {% else %}
+        <div class="no-image alert alert-warning">
+            <i class="fas fa-image"></i> Изображение отсутствует
+        </div>
+        {% endif %}
+        </div>
+
+        <div class="product-details">
+            <p><strong>Цена:</strong>
+                {% if product.PRICE %}
+                    {{ product.PRICE }} руб.
+                {% else %}
+                    <span class="text-muted">не указана</span>
+                {% endif %}
+            </p>
+
+            {% if product.DESCRIPTION %}
+            <div class="product-description">
+                <h3>Описание:</h3>
+                <div class="description-content">{{ product.DESCRIPTION|safe }}</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

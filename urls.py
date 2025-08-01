@@ -23,7 +23,8 @@ import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.main_page, name='main_page'),
-    path('deals/',include('deals.urls')),
+    path('deals/', include('deals.urls')),
+    path('product/', include('product.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

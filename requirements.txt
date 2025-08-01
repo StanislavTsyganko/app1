@@ -22,3 +22,5 @@ httpx~=0.24.1
 certifi~=2023.5.7
 cryptography~=41.0.3
 python-telegram-bot~=13.0
+qrcode~=8.2
+standardjson~=0.3.1
