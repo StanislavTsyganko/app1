@@ -23,13 +23,17 @@
         </thead>
         <tbody>
             {% for employee in employees %}
-            <tr>
-                <td> <a>{{ employee.LAST_NAME }} {% if SECOND_NAME %} {{ SECOND_NAME }} {% endif %} {{ NAME }} </a> </td>
-                <td>{{ employee.UF_DEPARTMENT }}</td>
-                <td>{{ employee.EMAIL }}</td>
-                <td> 'head_response' </td>
-                <td> 'count' </td>
-            </tr>
+                {% for department in employee.UF_DEPARTMENT %}
+                    {% if department != 1 or employee.UF_DEPARTMENT|length <= 1 %}
+                    <tr data-employee-id="{{ employee.ID }}" data-department-id="{{ department }}">
+                        <td> <a>{{ employee.LAST_NAME }} {{ employee.NAME }} {% if employee.SECOND_NAME %} {{ employee.SECOND_NAME }} {% endif %} </a> </td>
+                        <td>{{ department }}</td>
+                        <td>{{ employee.EMAIL }}</td>
+                        <td class="head-response"></td>
+                        <td class="callCount"></td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
             {% empty %}
             <tr>
                 <td colspan="4">Сотрудников не найдено</td>
@@ -40,15 +44,69 @@
 
 <script src="https://unpkg.com/@bitrix24/b24jssdk@latest/dist/umd/index.min.js"></script>
 <script>
+
+        async function getAllDirectors(userId, deptId, $b24){
+            let directors=[];
+            let currDeptId = deptId;
+            const maxDepth = 10;
+            let depth = 0;
+            while(currDeptId && depth++ < maxDepth){
+                const deptResponse = await $b24.callMethod('department.get', {
+                    "ID": currDeptId,
+                    "SELECT": ['UF_HEAD', 'NAME','PARENT']
+                });
+                const deptData = deptResponse.getData().result[0];
+
+                if (deptData?.UF_HEAD && deptData.UF_HEAD!=userId){
+                    const directorResponse = await $b24.callMethod('user.get', {
+                        ID: deptData.UF_HEAD,
+                        SELECT: ['NAME', 'SECOND_NAME', 'LAST_NAME']
+                    });
+                    const directorData = directorResponse.getData().result[0];
+                    directors.push(`${directorData.LAST_NAME} ${directorData.NAME} ${directorData.SECOND_NAME || ''}`.trim());
+                }
+                currDeptId = deptData.PARENT;
+
+            }
+            return directors.join(", ");
+        }
+
     document.addEventListener('DOMContentLoaded', async () => {
         try
         {
             let $b24 = await B24Js.initializeB24Frame();
+            const logger = B24Js.LoggerBrowser.build('MyApp', true);
+            $b24.setLogger(
+                logger
+            );
+            logger.info('Bitrix24 SDK инициализирован');
+
+
+            document.querySelectorAll('tr[data-employee-id]').forEach(async row => {
+                const employeeId = row.getAttribute('data-employee-id');
+                const departmentId = row.getAttribute('data-department-id');
+
+                const response = await $b24.callMethod(
+                'voximplant.statistic.get',
+                {
+                    "FILTER": { "USER_ID": employeeId, ">CALL_DURATION":60}
+                });
+
+                const callCount = response.getData().result.TOTAL;
+
+                row.querySelector('.callCount').textContent = callCount || 0;
+
+                row.querySelector('.head-response').textContent = await getAllDirectors(employeeId, departmentId, $b24) || 'Нет';
+                }
+            );
+
+
         }
         catch (error)
         {
             console.error(error);
         }
+
     });
 
 
