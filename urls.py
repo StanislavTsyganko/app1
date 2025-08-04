@@ -25,6 +25,7 @@ urlpatterns = [
     path('', views.main_page, name='main_page'),
     path('deals/', include('deals.urls')),
     path('product/', include('product.urls')),
+    path('employees/', include('employees.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

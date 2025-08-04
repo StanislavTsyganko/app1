@@ -1,0 +1,56 @@
+{% extends 'main_page.html' %}
+
+{% block title %}
+    <title>Page with QR generation</title>
+{% endblock %}
+
+{% block user %}
+{% endblock %}
+
+
+{% block content %}
+ <h2>Сотрудники компании </h2>
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th>Сотрудник</th>
+                <th>Отдел</th>
+                <th>e-mail</th>
+                <th>Руководители</th>
+                <th>Количество звонков
+                    за последние 24 часа</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for employee in employees %}
+            <tr>
+                <td> <a>{{ employee.LAST_NAME }} {% if SECOND_NAME %} {{ SECOND_NAME }} {% endif %} {{ NAME }} </a> </td>
+                <td>{{ employee.UF_DEPARTMENT }}</td>
+                <td>{{ employee.EMAIL }}</td>
+                <td> 'head_response' </td>
+                <td> 'count' </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">Сотрудников не найдено</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+<script src="https://unpkg.com/@bitrix24/b24jssdk@latest/dist/umd/index.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        try
+        {
+            let $b24 = await B24Js.initializeB24Frame();
+        }
+        catch (error)
+        {
+            console.error(error);
+        }
+    });
+
+
+</script>
+{% endblock %}

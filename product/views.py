@@ -1,5 +1,4 @@
 from django.shortcuts import render, get_object_or_404
-
 from integration_utils.bitrix24.bitrix_token import BitrixToken
 from integration_utils.bitrix24.bitrix_user_auth.main_auth import main_auth
 from django.http import JsonResponse, HttpResponse
