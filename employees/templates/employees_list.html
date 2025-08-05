@@ -28,7 +28,7 @@
                     {% if department != 1 or employee.UF_DEPARTMENT|length <= 1 %}
                     <tr data-employee-id="{{ employee.ID }}" data-department-id="{{ department }}">
                         <td> <a href="javascript:void(0)" onclick="openEmployeeSlide({{ employee.ID }}, event)">{{ employee.LAST_NAME }} {{ employee.NAME }} {% if employee.SECOND_NAME %} {{ employee.SECOND_NAME }} {% endif %} </a> </td>
-                        <td>{{ department }}</td>
+                        <td class="department"></td>
                         <td>{{ employee.WORK_POSITION }}</td>
                         <td>{{ employee.EMAIL }}</td>
                         <td class="head-response"></td>
@@ -166,6 +166,13 @@
                 const departmentId = row.getAttribute('data-department-id');
                 if (!employeeId) continue;
 
+                const deptResponse = await $b24.callMethod('department.get', {
+                    "ID": departmentId,
+                    "SELECT": ['NAME']
+                });
+                const deptData = deptResponse.getData().result[0];
+                console.log(deptData);
+                row.querySelector('.department').textContent = deptData['NAME'];
 
                 const response = await $b24.callMethod(
                 'voximplant.statistic.get',
