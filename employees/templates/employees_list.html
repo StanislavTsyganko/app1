@@ -15,6 +15,7 @@
             <tr>
                 <th>Сотрудник</th>
                 <th>Отдел</th>
+                <th>Должность</th>
                 <th>e-mail</th>
                 <th>Руководители</th>
                 <th>Количество звонков
@@ -26,8 +27,9 @@
                 {% for department in employee.UF_DEPARTMENT %}
                     {% if department != 1 or employee.UF_DEPARTMENT|length <= 1 %}
                     <tr data-employee-id="{{ employee.ID }}" data-department-id="{{ department }}">
-                        <td> <a>{{ employee.LAST_NAME }} {{ employee.NAME }} {% if employee.SECOND_NAME %} {{ employee.SECOND_NAME }} {% endif %} </a> </td>
+                        <td> <a href="javascript:void(0)" onclick="openEmployeeSlide({{ employee.ID }}, event)">{{ employee.LAST_NAME }} {{ employee.NAME }} {% if employee.SECOND_NAME %} {{ employee.SECOND_NAME }} {% endif %} </a> </td>
                         <td>{{ department }}</td>
+                        <td>{{ employee.WORK_POSITION }}</td>
                         <td>{{ employee.EMAIL }}</td>
                         <td class="head-response"></td>
                         <td class="callCount"></td>
@@ -42,7 +44,22 @@
         </tbody>
     </table>
 
+    <form id="callGenForm" class="call-gen-form">
+        <div class="form-group">
+            <label for="callCountInput">Количество звонков:</label>
+            <input type="number" id="callCountInput" name="callCountInput" min="1" max="50" value="10" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary generate-btn m-3">
+            <i class="fas fa-phone"></i> Сгенерировать звонки
+        </button>
+
+        <div id="generationResult" class="mt-3 alert">
+
+        </div>
+    </form>
+
 <script src="https://unpkg.com/@bitrix24/b24jssdk@latest/dist/umd/index.min.js"></script>
+<script src="https://api.bitrix24.com/api/v1/"></script>
 <script>
 
         async function getAllDirectors(userId, deptId, $b24){
@@ -71,42 +88,102 @@
             return directors.join(", ");
         }
 
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('callGenForm');
+            const resultDiv = document.getElementById('generationResult');
+
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const callCount = parseInt(document.getElementById('callCountInput').value);
+
+                if (callCount < 1 || callCount > 100) {
+                    showResult('Введите число от 1 до 100', 'danger');
+                    return;
+                }
+
+                try {
+                    const response = await fetch('{% url "employees:generate_test_calls" %}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': '{{ csrf_token }}',
+                        },
+                        body: JSON.stringify({
+                            count: callCount
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        resultDiv.textContent = `Успешно сгенерировано звонков: ${data.count_generated}`
+                    }
+                    else {
+                        throw new Error(data.error || 'Ошибка сервера');
+                    }
+                } catch (error){
+                    console.log("Ошибка генерации" + error)
+                }
+            });
+        });
+
+        function openEmployeeSlide(userId, event) {
+            try{
+                event.preventDefault();
+                BX24.init(
+                    function()
+                    {
+                        BX24.openPath(
+                            `/company/personal/user/${userId}/`.trim(),
+                            function(result)
+                            {
+                                console.log(result);
+                            }
+                        );
+                    }
+                );
+            }
+            catch(err)
+            {
+                console.error('Ошибка открытия слайдера:', err);
+            }
+        }
+    let $b24;
     document.addEventListener('DOMContentLoaded', async () => {
         try
         {
-            let $b24 = await B24Js.initializeB24Frame();
+            $b24 = await B24Js.initializeB24Frame();
             const logger = B24Js.LoggerBrowser.build('MyApp', true);
             $b24.setLogger(
                 logger
             );
             logger.info('Bitrix24 SDK инициализирован');
 
+            const rows = document.querySelectorAll('tr[data-employee-id]');
 
-            document.querySelectorAll('tr[data-employee-id]').forEach(async row => {
+            for (const row of rows) {
                 const employeeId = row.getAttribute('data-employee-id');
                 const departmentId = row.getAttribute('data-department-id');
+                if (!employeeId) continue;
+
 
                 const response = await $b24.callMethod(
                 'voximplant.statistic.get',
                 {
-                    "FILTER": { "USER_ID": employeeId, ">CALL_DURATION":60}
+                    "FILTER": { "PORTAL_USER_ID": employeeId, ">CALL_DURATION":60}
                 });
 
-                const callCount = response.getData().result.TOTAL;
+                const callCount = response.getData()?.total || 0;
 
-                row.querySelector('.callCount').textContent = callCount || 0;
+                row.querySelector('.callCount').textContent = callCount;
 
                 row.querySelector('.head-response').textContent = await getAllDirectors(employeeId, departmentId, $b24) || 'Нет';
                 }
-            );
-
-
         }
         catch (error)
         {
             console.error(error);
         }
-
     });
 
 
