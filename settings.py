@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'integration_utils.its_utils.app_gitpull',
     'deals',
     'product',
-    'employees'
+    'employees',
+    'company_map'
 ]
 
 MIDDLEWARE = [

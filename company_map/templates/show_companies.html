@@ -1,0 +1,85 @@
+{% extends 'main_page.html' %}
+
+{% block title %}
+    <title>Companies map</title>
+{% endblock %}
+
+{% block user %}
+{% endblock %}
+
+
+{% block content %}
+<div style="height: 50px" class="mb-10 h-10"></div>
+
+<div id="map" style="width: 90%; height: 500px" class="mx-auto d-block mh-90 mw-80 mt-10 rounded"></div>
+
+
+
+<script src="https://api-maps.yandex.ru/2.1/?lang=ru_ru&apikey=5ea1a43a-e737-45b0-850e-ef405223dae5&load=package.full"></script>
+<script src="https://unpkg.com/@bitrix24/b24jssdk@latest/dist/umd/index.min.js"></script>
+<script src="https://api.bitrix24.com/api/v1/"></script>
+
+
+
+<script>
+    let $b24;
+    const API_KEY = '5ea1a43a-e737-45b0-850e-ef405223dae5';
+    ymaps.ready(initMap);
+
+    async function initMap() {
+        const map = new ymaps.Map("map", {
+            center: [59.934280, 30.335099],
+            zoom: 10
+        });
+
+        $b24 = await B24Js.initializeB24Frame();
+
+        const logger = B24Js.LoggerBrowser.build('MyApp', true);
+        $b24.setLogger(
+            logger
+        );
+
+        const companies = JSON.parse('{{ companies|safe }}');
+
+
+        for(const company of companies)
+        {
+            if (!company.ADDRESS) continue;
+
+            try {
+                const response = await fetch(`{% url "company_map:geocode" %}?address=${encodeURIComponent(company.ADDRESS)}`);
+
+                const { lat, lon } = await response.json();
+
+                console.log(company.ADDRESS);
+                console.log(lat);
+                console.log(lon);
+                console.log(company.LOGO);
+
+                const balloonContent = `
+                    <div class="company-balloon mw-20">
+                      ${company.LOGO ? `<img src="${company.LOGO}" style="width:100px" class="company-logo rounded">` : ''}
+                      <h3>${company.TITLE}</h3>
+                      <p><strong>Тип:</strong> ${company.COMPANY_TYPE}</p>
+                      <p><strong>Адрес:</strong> ${company.ADDRESS}</p>
+                    </div>
+                  `;
+
+                const marker = new ymaps.Placemark(
+                    [lat, lon],
+                    { hintContent: company.TITLE,
+                        balloonContent: balloonContent }
+                );
+                map.geoObjects.add(marker);
+            } catch (error) {
+                console.error(`Ошибка для "${company.TITLE}":`, error);
+            }
+        }
+
+        console.log('Карта инициализирована');
+    }
+
+
+</script>
+
+{% endblock %}

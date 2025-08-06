@@ -26,6 +26,7 @@ urlpatterns = [
     path('deals/', include('deals.urls')),
     path('product/', include('product.urls')),
     path('employees/', include('employees.urls')),
+    path('company_map/', include('company_map.urls')),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
