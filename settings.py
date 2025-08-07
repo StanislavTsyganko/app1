@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'deals',
     'product',
     'employees',
-    'company_map'
+    'company_map',
+    'contacts'
 ]
 
 MIDDLEWARE = [
