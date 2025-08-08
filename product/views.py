@@ -12,20 +12,33 @@ from django.core.signing import BadSignature
 
 @main_auth(on_cookies=True)
 def generate_url(request):
-    if request.method == "POST":
-        product_id = request.POST.get("product_id")
+    try:
+        bx = request.bitrix_user_token
+        result = bx.call_list_method('crm.product.list', {'select': ['id', 'SECTION_ID', 'NAME', 'DESCRIPTION']})
 
-        product = ProductLink.create_for_product(product_id=product_id)
+        if request.method == "POST":
+            product_id = request.POST.get("product_id")
+            product_name = request.POST.get("product_name")
 
-        qr_url = f"http://127.0.0.1:8000/product/product_page/{product}"
-        img = qrcode.make(qr_url)
-        buffer = BytesIO()
-        img.save(buffer, format="PNG")
-        qr_image = base64.b64encode(buffer.getvalue()).decode()
+            if not product_id and product_name:
+                product_id = bx.call_list_method('crm.product.list', {'filter': {'NAME': product_name}})[0]['ID']
 
-        return render(request, 'generate_url.html', {'qr_url': qr_url, 'qr_image': qr_image})
+            if not product_id:
+                return render(request, 'generate_url.html', {'products': result})
 
-    return render(request, 'generate_url.html')
+            product = ProductLink.create_for_product(product_id=product_id)
+
+            qr_url = f"http://127.0.0.1:8000/product/product_page/{product}"
+            img = qrcode.make(qr_url)
+            buffer = BytesIO()
+            img.save(buffer, format="PNG")
+            qr_image = base64.b64encode(buffer.getvalue()).decode()
+
+            return render(request, 'generate_url.html', {'qr_url': qr_url, 'qr_image': qr_image, 'products': result})
+
+        return render(request, 'generate_url.html', {'products': result})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 def product_page(request, uuid):

@@ -117,6 +117,8 @@ def process_duplicates(bx, created_contacts_ids):
 
     print(batch_commands)
 
+    process_duplicates_results = bx.batch_api_call(batch_commands) if batch_commands else {}
+
     return merge_results
 
 

@@ -12,8 +12,28 @@
     <div class="row justify-content-center">
     <form method="post" class="needs-validation">
       {% csrf_token %}
-      <label for="product_id" class="form-label fw-bold mt-4">ID товара:</label>
-      <input type="number" class="form-control form-control-lg" id="product_id" name="product_id" required>
+         <div class="row">
+            <div class="col-md-4">
+              <label for="product_id" class="form-label fw-bold mt-4">ID товара:</label>
+              <input type="number" class="form-control form-control-lg" id="product_id" name="product_id" list="products-id-autocomplete" required>
+                <datalist id="products-id-autocomplete">
+                  {% for product in products %}
+                    <option value="{{ product.ID }}">
+                  {% endfor %}
+                </datalist>
+            </div>
+
+            <div class="col-md-4">
+              <label for="product_name" class="form-label fw-bold mt-4">Название товара:</label>
+              <input type="text" class="form-control form-control-lg" id="product_name" name="product_name" list="products-autocomplete" required>
+                <datalist id="products-autocomplete">
+                  {% for product in products %}
+                    <option value="{{ product.NAME }}">
+                  {% endfor %}
+                </datalist>
+            </div>
+        </div>
+
       <button type="submit" class="btn btn-primary btn-lg py-3 mt-4">Сгенерировать QR</button>
     </form>
 
@@ -24,7 +44,96 @@
       <img src="data:image/png;base64,{{ qr_image }}" alt="QR-код">
     {% endif %}
 
+    <h1 class="m-3">Список товаров</h1>
+
+    <table class="table table-hover table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Наименование</th>
+                <th>Описание</th>
+                <th>Разделы</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products %}
+                <tr>
+                    <td>{{ product.ID }}</td>
+                    <td>{{ product.NAME }}</td>
+                    <td>{{ product.DESCRIPTION }}</td>
+                    <td>{{ product.SECTION_ID }}</td>
+                </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">Товароов не найдено</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
     </div>
 </div>
+
+<script>
+  const productNames = new Set([
+    {% for product in products %}
+        "{{ product.NAME|escapejs }}",
+    {% endfor %}
+  ]);
+
+  const productIds = new Set([
+    {% for product in products %}
+        {{ product.ID }},
+    {% endfor %}
+  ]);
+
+  document.addEventListener('DOMContentLoaded', function() {
+      const productIdField = document.getElementById('product_id');
+      const productNameField = document.getElementById('product_name');
+
+      function toggleFieldLock(sourceField, targetField) {
+        if (sourceField.value.trim() !== '') {
+          targetField.disabled = true;
+          targetField.value = '';
+          targetField.removeAttribute('required');
+          sourceField.setAttribute('required', 'true');
+        } else {
+          targetField.disabled = false;
+          sourceField.removeAttribute('required');
+        }
+      }
+
+      productIdField.addEventListener('input', function() {
+        toggleFieldLock(productIdField, productNameField);
+      });
+
+      productNameField.addEventListener('input', function() {
+        toggleFieldLock(productNameField, productIdField);
+      });
+
+      document.querySelector('form').addEventListener('submit', function(e) {
+        if (!productIdField.value && !productNameField.value) {
+          e.preventDefault();
+          alert('Заполните либо ID товара, либо название товара!');
+        } else if (productIdField.value && productNameField.value) {
+          e.preventDefault();
+          alert('Заполните только одно поле: либо ID, либо название!');
+        }
+
+        if(productIdField.value && !productIds.has(parseInt(productIdField.value)))
+        {
+          e.preventDefault();
+          alert('Товар с этим ID не существует');
+        }
+        else if (productNameField.value && !productNames.has(productNameField.value)) {
+          e.preventDefault();
+          alert('Товар с этим названием не существует');
+        }
+      });
+  });
+
+
+
+</script>
 
 {% endblock %}
